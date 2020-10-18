@@ -1,13 +1,32 @@
 const routCard = require('express').Router();
+const { celebrate, Joi } = require('celebrate');
+Joi.objectId = require('joi-objectid')(Joi);
 
 const {
   findCard, createCard, deleteCard, likeCard, dislikeCard,
 } = require('../controllers/cards');
 
 routCard.get('/', findCard);
-routCard.post('/', createCard);
-routCard.delete('/:cardId', deleteCard);
-routCard.put('/:cardId/likes', likeCard);
-routCard.delete('/:cardId/likes', dislikeCard);
+routCard.post('/', celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().required().min(2).max(30),
+    link: Joi.string().required().pattern(/http(s)?[:][/]{2}(www[.])?(((((\d*[a-z]+\d*((([-]\d*[a-z]+\d*))*)?((([-][a-z]*\d+[a-z]*))*)?)|([a-z]*\d+[a-z]*\d*))([-]\d+[a-z]*\d*)?([-][a-z]+\d*[a-z]*)?(([-]\d+[a-z]*\d*)*([-][a-z]+\d*[a-z]*)*)[.][a-z][a-z]([a-z])?((([:](([1-9])|([1-9][0-9])|([1-9][0-9][0-9])|([1-9][0-9][0-9][0-9])|(6553[0-5])|(655[0-3][0-5])|(655[0-2][0-9])|(65[0-5][0-3][0-5])|(65[0-4][0-9][0-9])|(6[0-5][0-5][0-3][0-5])|(6[0-4][0-9][0-9][0-9])|([1-6][0-5][0-5][0-3][0-5])|([1-5][0-9][0-9][0-9][0-9])))|((([/]((\d*(([a-z]+)|(\d+))\d*[a-z]*)|([a-z]*(([a-z]+)|(\d+))[a-z]*\d*))[/])*)))|((([/]\d*(([a-z]+)|(\d+))\d*[a-z]*([-]?\d*(([a-z]+)|(\d+))\d*[a-z]*)?([/]|[#]))|((([/]\d*(([a-z]+)|(\d+))\d*[a-z]*([-]?\d*(([a-z]+)|(\d+))\d*[a-z]*)?[/])((\d*(([a-z]+)|(\d+))\d*[a-z]*([-]?\d*(([a-z]+)|(\d+))\d*[a-z]*)?[/])*)*)(\d*(([a-z]+)|(\d+))\d*[a-z]*([-]?\d*(([a-z]+)|(\d+))\d*[a-z]*)?([/]|[#]))))))?)|(\d*(([a-z]+)|(\d+))(([.]?[a-z]+)?(([-]?[a-z]+\d*[a-z]*)*([-]\d+[a-z]*\d*)*)?\d*[a-z]*)?[.][a-z][a-z]([a-z])?)(([:](([1-9])|([1-9][0-9])|([1-9][0-9][0-9])|([1-9][0-9][0-9][0-9])|(6553[0-5])|(655[0-3][0-5])|(655[0-2][0-9])|(65[0-5][0-3][0-5])|(65[0-4][0-9][0-9])|(6[0-5][0-5][0-3][0-5])|(6[0-4][0-9][0-9][0-9])|([1-6][0-5][0-5][0-3][0-5])|([1-5][0-9][0-9][0-9][0-9]))[/]?)|((([/]((\d*[a-z]+\d*[a-z]*)|([a-z]*\d+[a-z]*\d*))[/])*))))|(\d{1,3}[.]\d{1,3}[.]\d{1,3}[.]\d{1,3}[:]((([1-9])|([1-9][0-9]))|([1-9][0-9][0-9])|([1-9][0-9][0-9][0-9])|(6553[0-5])|(655[0-3][0-5])|(655[0-2][0-9])|(65[0-5][0-3][0-5])|(65[0-4][0-9][0-9])|(6[0-5][0-5][0-3][0-5])|(6[0-4][0-9][0-9][0-9])|([1-6][0-5][0-5][0-3][0-5])|([1-5][0-9][0-9][0-9][0-9]))((([/]\d*[a-z]+\d*[a-z]*([-]?\d*[a-z]+\d*[a-z]*)?[#])|([/][a-z]*\d+[a-z]*([-][a-z]*\d+[a-z]*\d*)*[/]([a-z]*\d+([a-z]*\d*([-][a-z]*\d+[a-z]*\d*)+)?([/][a-z]*\d+[a-z]*\d*([-][a-z]*\d+[a-z]*\d*)*)*)?[#])|([a-z]*\d+[a-z]*\d*([-][a-z]*\d+[a-z]*\d*)*[#])|([/]((\d+)|([a-z]+))+([-][a-z]*(((\d+)|([a-z]+))[a-z]*\d*))*([/]((\d+)|([a-z]+))+([-][a-z]*(((\d+)|([a-z]+))[a-z]*\d*))*)*[#])|((([/]\d*[a-z]+\d*[a-z]*([-]?\d*[a-z]+\d*[a-z]*)?[/])((\d*[a-z]+\d*[a-z]*([-]?\d*[a-z]+\d*[a-z]*)?[/])*)*)(\d*[a-z]+\d*[a-z]*([-]?\d*[a-z]+\d*[a-z]*)?[#])))?)))/),
+  }),
+}), createCard);
+routCard.delete('/:cardId', celebrate({
+  params: Joi.object().keys({
+    cardId: Joi.objectId().length(24).hex(), // проверка на 16 строку и айди в 24 знака (hex)
+  }),
+}), deleteCard);
+routCard.put('/:cardId/likes', celebrate({
+  params: Joi.object().keys({
+    cardId: Joi.objectId().length(24).hex(), // проверка на 16 строку и айди в 24 знака (hex)
+  }),
+}), likeCard);
+routCard.delete('/:cardId/likes', celebrate({
+  params: Joi.object().keys({
+    cardId: Joi.objectId().length(24).hex(), // проверка на 16 строку и айди в 24 знака (hex)
+  }),
+}), dislikeCard);
 
 module.exports = routCard;
