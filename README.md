@@ -50,7 +50,7 @@ require('crypto').randomBytes(32).toString('hex'))
 
 ## **Актуальная версия проекта**
 
-***v.0.0.6***
+***v.0.0.7***
 
 ## **Как запустить проект**
 1. _Локально_:
@@ -60,3 +60,6 @@ require('crypto').randomBytes(32).toString('hex'))
 Через Postman делать запросы по адресам:
 + https://www.yamesto.students.nomoreparties.space
 + https://yamesto.students.nomoreparties.space
+
+## **Публичный IP адрес сервера**
+http://130.193.57.160/
