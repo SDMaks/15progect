@@ -3,7 +3,7 @@ const cardSchema = require('../models/card');
 
 const InBaseNotFound = require('../errors/InBaseNotFound'); // 404
 const BadRequest = require('../errors/badRequest'); // 400
-const NoRightsError = require('../errors/badRequest'); // 403
+const NoRightsError = require('../errors/noRightsError'); // 403
 
 module.exports.findCard = (req, res, next) => {
   cardSchema.find({})

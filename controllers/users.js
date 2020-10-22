@@ -41,12 +41,8 @@ module.exports.findUserId = (req, res, next) => {
 
 module.exports.createUser = (req, res, next) => {
   const {
-    name, about, avatar, email, password,
+    name, about, avatar, email,
   } = req.body;
-
-  if (password.length < 8 || password.trim().length === 0) {
-    throw new BadRequest('Пароль должен быть не менее 8 символов и не пустой строкой');
-  }
 
   bcrypt.hash(req.body.password, 10)
     .then((hash) => userSchema.create({
