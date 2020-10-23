@@ -3,7 +3,7 @@ const cardSchema = require('../models/card');
 
 const InBaseNotFound = require('../errors/InBaseNotFound'); // 404
 const BadRequest = require('../errors/badRequest'); // 400
-const NoRightsError = require('../errors/badRequest'); // 403
+const NoRightsError = require('../errors/noRightsError'); // 403
 
 module.exports.findCard = (req, res, next) => {
   cardSchema.find({})
@@ -30,7 +30,6 @@ module.exports.deleteCard = (req, res, next) => {
     if (!mongoose.Types.ObjectId.isValid(cardId)) {
       throw new BadRequest('Не валидный запрос');
     }
-    // let errorCode = 500;
     cardSchema.findById(cardId)
       .orFail(() => {
         throw new InBaseNotFound('Такой карточки в базе нет');
@@ -41,11 +40,9 @@ module.exports.deleteCard = (req, res, next) => {
         }
         card.remove()
           .then(() => res.send({ message: 'Карточка удалена' }));
-        // .catch(() => res.status(500).send({ message: 'Ошибка на сервере' }));
       })
       .catch(next);
   } catch (err) {
-    // res.status(400).send({ message: err.message });
     next(err);
   }
 };

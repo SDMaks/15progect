@@ -19,7 +19,6 @@ module.exports.findUser = (req, res, next) => {
       res.send({ data: user });
     })
     .catch(next);
-// .catch(() => res.status(500).send({ message: 'На сервере произошла ошибка' }));
 };
 
 module.exports.findUserId = (req, res, next) => {
@@ -36,20 +35,14 @@ module.exports.findUserId = (req, res, next) => {
       .then((user) => res.send({ data: user }))
       .catch(next);
   } catch (err) {
-    // res.status(400).send({ message: err.message });
-    // const e = new BadRequest('Не правильный запрос');
     next(err);
   }
 };
 
 module.exports.createUser = (req, res, next) => {
   const {
-    name, about, avatar, email, password,
+    name, about, avatar, email,
   } = req.body;
-
-  if (password.length < 8 || password.trim().length === 0) {
-    throw new BadRequest('Пароль должен быть не менее 8 символов и не пустой строкой');
-  }
 
   bcrypt.hash(req.body.password, 10)
     .then((hash) => userSchema.create({
@@ -63,25 +56,14 @@ module.exports.createUser = (req, res, next) => {
     .then((user) => res.status(201).send({ _id: user._id, email: user.email }))
     .catch((err) => {
       if (err.name === 'MongoError' && err.code === 11000) {
-        /* res
-           .status(409)
-          .send({
-            message: 'Пользователь с таким Email уже зарегестрирован!',
-          }); */
         throw new ErrorUniqueUser('Пользователь с таким Email уже зарегестрирован!');
       }
-      // res.status(400).send({ message: err.message });
     })
     .catch(next);
 };
 
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
-  /* if (!password || !email) {
-    return res
-      .status(400)
-      .send({ message: 'Поля "e-mail" и "пароль" должны быть заполнены' });
-  } */
   return userSchema.findUserByCredentials(email, password)
     .then((user) => {
       // аутентификация успешна! пользователь в переменной user
@@ -95,10 +77,6 @@ module.exports.login = (req, res, next) => {
         .send({ message: 'Вы авторизованы' });
     })
     .catch((err) => {
-      // ошибка аутентификации
-      /* res
-        .status(401)
-        .send({ message: err.message }); */
       next(err);
     });
 };
